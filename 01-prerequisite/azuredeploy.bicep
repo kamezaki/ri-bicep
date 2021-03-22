@@ -19,16 +19,14 @@ param apps array = [
   'droneScheduler'
 ]
 
-var rgTags = {
-  displayName: 'Resource group for general purpose'
-}
-
 module rg '../templates/resource-group.bicep' = {
   name: 'nested-${resourceGroupName}'
   params: {
     name: resourceGroupName
     location: location
-    tags: rgTags
+    tags: {
+      displayName: 'Resource group for general purpose'
+    }
   }
 } 
 
