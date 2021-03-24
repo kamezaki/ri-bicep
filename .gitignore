@@ -1,0 +1,9 @@
+# local environments
+.envrc
+
+# bicep build output
+*.json
+
+# System Files
+.DS_Store
+Thumbs.db
