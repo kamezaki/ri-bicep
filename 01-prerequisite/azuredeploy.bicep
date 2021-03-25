@@ -4,7 +4,7 @@ targetScope = 'subscription'
 @description('Resource group name for general purpose')
 param resourceGroupName string = 'ri-app-rg'
 @description('location for general purpose resource group')
-param location string
+param location string = deployment().location
 @description('execution environment')
 @allowed([
   'dev'
@@ -30,7 +30,7 @@ module rg '../templates/resource-group.bicep' = {
   }
 } 
 
-var rgScope = resourceGroup(rg.name)
+var rgScope = resourceGroup(resourceGroupName)
 module userIdentities '../templates/user-assingment-identity.bicep' = [for app in apps: {
   scope: rgScope
   name: 'nested-identity-${environment}-${app}'
