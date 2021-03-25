@@ -14,3 +14,5 @@ resource group 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   location: location
   tags: tags
 }
+
+output id string = group.id
