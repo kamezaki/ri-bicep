@@ -2,14 +2,9 @@
 
 ```
 export APP_NAME="ri-app"
-export RESOURCE_GROUP="ri-app-rg"
-export LOCATION="japaneast"
 ```
 
 ## Create app and resource group
 
-```
-az ad sp create-for-rbac --name ${APP_NAME}
-
-az group add --name ${RESOURCE_GROUP} --location ${LOCATION}
-```
+1. az ad sp create-for-rbac --name ${APP_NAME}
+1. create prerequisite resources see [01-prerequisite](01-prerequisite/README.md)
