@@ -4,6 +4,9 @@
 # bicep build output
 *.json
 
+# Local help file
+HELP.md
+
 # System Files
 .DS_Store
 Thumbs.db

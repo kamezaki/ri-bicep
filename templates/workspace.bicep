@@ -8,11 +8,11 @@ param workspaceNamePrefix string
 param location string = resourceGroup().location
 @description('sku for workspace')
 param sku string = 'pergb2018'
-@minValue(30)
+@minValue(1)
 @maxValue(730)
-param retentionDays int = 90
+param retentionDays int = 7
 // Tag information for Log analytics workspace
-param tags object = json('null')
+param tags object = {}
 
 var workspaceName = '${workspaceNamePrefix}-${subscriptionId}'
 

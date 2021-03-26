@@ -27,17 +27,25 @@ param agentVMSize string = 'Standard_D2_v3'
 @maxValue(1023)
 param osDiskSizeGB int = 0
 @description('Node resource group name')
-param nodeResourceGroup string = json('null')
+param nodeResourceGroup string = 'MC_${resourceGroup().name}'
 @description('service princilal client id')
-param servicePrincipalId string = 'msi'
+param servicePrincipalId string = ''
 @description('service principal secret')
-param servicePrincipalSecret string = json('null')
+param servicePrincipalSecret string = ''
 @description('subnet refernce')
-param subnetRef string = json('null')
+param subnetRef string = ''
 @description('Log analytics workspace id')
-param workspaceId string = json('null')
+param workspaceId string = ''
 @description('tags for aks cluster')
-param tags object = json('null')
+param tags object = {}
+
+var servicePrincipalProfile = {
+  clientId: servicePrincipalId
+  secret: servicePrincipalSecret
+}
+var systemAssignedPrincipalProfile = {
+  clientId: 'msi'
+}
 
 // Azure kubernetes service
 resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
@@ -64,13 +72,10 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
         osType: 'Linux'
         enableAutoScaling: true
         availabilityZones: length(availabilityZones) == 0 ? json('null') : availabilityZones
-        vnetSubnetID: subnetRef
+        vnetSubnetID: empty(subnetRef) ? json('null') : subnetRef
       }
     ]
-    servicePrincipalProfile: {
-      clientId: servicePrincipalId
-      secret: servicePrincipalSecret
-    }
+    servicePrincipalProfile: length(servicePrincipalId) != 0 ? servicePrincipalProfile : systemAssignedPrincipalProfile
     nodeResourceGroup: nodeResourceGroup
     networkProfile: {
       networkPlugin: 'azure'  // use Azure CNI
@@ -90,4 +95,4 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
 output id string = aks.id
 output name string = aks.name
 output apiServerAddress string = aks.properties.fqdn
-output principalId string = aks.identity.principalId
+output principalId string = any(aks.properties.identityProfile.kubeletidentity).objectId

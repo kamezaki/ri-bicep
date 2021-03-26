@@ -11,7 +11,7 @@ param location string = resourceGroup().location
 ])
 param sku string
 @description('tags for resource')
-param tags object = json('null')
+param tags object = {}
 
 resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: name
