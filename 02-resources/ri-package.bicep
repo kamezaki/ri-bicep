@@ -15,7 +15,7 @@ module database '../templates/cosmos-db.bicep' = {
     kind: 'MongoDB'
     tags: {
       displayName: 'Pkackage Cosmos DB'
-      app: '${appName}-delivery'
+      app: '${appName}-package'
       environment: environment
     }
   }
