@@ -36,7 +36,6 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     }
     createMode: 'default'
     enableSoftDelete: production
-    enableRbacAuthorization: true
     accessPolicies: [ for id in principalIds: {
       tenantId: tenantId
       objectId: id

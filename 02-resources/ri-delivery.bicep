@@ -39,7 +39,7 @@ module database '../templates/cosmos-db.bicep' = {
 
 // todo enable diagnostics
 
-var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae'
+var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
 
 module deliveryPrincipal '../templates/query-identity.bicep' = {
   name: 'query-${environment}-delivery'
@@ -54,6 +54,7 @@ module deliveryKV '../templates/key-vault.bicep' = {
     name: kvName
     principalIds: [
       deliveryPrincipal.outputs.principalId
+      readerRoleObjectId
     ]
     data: [
       {
