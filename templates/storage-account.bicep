@@ -34,7 +34,8 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-01-01' = {
   sku:{
     name: sku
     tier: tier
-  }  
+  }
+  tags: tags
 }
 
 output id string = sa.id

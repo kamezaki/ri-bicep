@@ -26,7 +26,7 @@ resource dbAccount 'Microsoft.DocumentDB/databaseAccounts@2021-03-01-preview' = 
         locationName: location
         failoverPriority: 0
       }
-      // TODO TBD
+      // TODO TBD (geo replicatoins)
     ]
   }
   tags: tags
