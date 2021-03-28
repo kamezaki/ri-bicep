@@ -1,0 +1,86 @@
+@description('setup environment name')
+param environment string
+@description('Instrumentation Key for Applicatoin Insights')
+param instrumentationKey string
+
+@description('tenant id')
+param tenantId string = subscription().tenantId
+@description('Application name')
+param appName string = 'fabrikam'
+
+var cacheName = '${environment}-d-${uniqueString(resourceGroup().id)}'
+var dbName = '${environment}-d-${uniqueString(resourceGroup().id)}'
+var kvName = '${environment}-d-${uniqueString(resourceGroup().id)}'
+
+module cache '../templates/redis-cache.bicep' = {
+  name: 'nested-cache-${cacheName}'
+  params: {
+    name: cacheName
+    tags: {
+      displayName: 'reds cache inflight delilveries'
+      app: '${appName}-delivery'
+      environment: environment
+    }
+  }
+}
+
+module database '../templates/cosmos-db.bicep' = {
+  name: 'nested-db-${dbName}'
+  params: {
+    name: dbName
+    kind: 'GlobalDocumentDB'
+    tags: {
+      displayName: 'Delivery Cosmos DB'
+      app: '${appName}-delivery'
+      environment: environment
+    }
+  }
+}
+
+// todo enable diagnostics
+
+var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae'
+
+module deliveryPrincipal '../templates/query-identity.bicep' = {
+  name: 'query-${environment}-delivery'
+  params: {
+    name: '${environment}-delivery'
+  }
+}
+
+module deliveryKV '../templates/key-vault.bicep' = {
+  name: 'nested-kv-${kvName}'
+  params: {
+    name: kvName
+    principalIds: [
+      deliveryPrincipal.outputs.principalId
+    ]
+    data: [
+      {
+        key: 'CosmosDB-Endpoint'
+        value: database.outputs.documentEndpoint
+      }
+      {
+        key: 'CosmosDB-Key'
+        value: database.outputs.primaryMasterKey
+      }
+      {
+        key: 'RedisCache-Endpoint'
+        value: cache.outputs.hostname
+      }
+      {
+        key: 'RedisCache-AccessKey'
+        value: cache.outputs.primaryKey
+      }
+      {
+        key: 'ApplicationInsights-InstrumentationKey'
+        value: instrumentationKey
+      }
+    ]
+    tags: {
+      displayName: 'Delivery Key Vault'
+      app: '${appName}-delivery'
+      environment: environment
+    }
+  }
+}

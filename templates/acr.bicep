@@ -20,12 +20,18 @@ resource acr 'Microsoft.ContainerRegistry/registries@2020-11-01-preview' = {
   tags: tags
 }
 
-var acrPullRole = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
-
-resource roleDef 'Microsoft.Authorization/roleDefinitions@2015-07-01' existing = {
-  scope: subscription()
-  name: acrPullRole
+var acrPullRoleObjectId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+module pullRoleDef 'role-definitions.bicep' = {
+  name: acrPullRoleObjectId
+  params: {
+    roleId: acrPullRoleObjectId
+  }
 }
+
+// resource roleDef 'Microsoft.Authorization/roleDefinitions@2015-07-01' existing = {
+//   scope: subscription()
+//   name: acrPullRole
+// }
 
 // for acr pull role
 resource pull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
@@ -33,7 +39,7 @@ resource pull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   scope: acr
   properties:{
     principalId: targetPrincipalId
-    roleDefinitionId: roleDef.id
+    roleDefinitionId: pullRoleDef.outputs.id
     principalType: 'ServicePrincipal'
     description: '${acrName}-acrpull'
   }

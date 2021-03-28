@@ -1,7 +1,9 @@
 @description('deployment environment')
 param environment string
 
-param appName string = 'fabrikan'
+@description('Application name')
+param appName string = 'fabrikam'
+
 // settings for ACR
 @description('ACR name')
 param acrName string = 'acr${appName}'

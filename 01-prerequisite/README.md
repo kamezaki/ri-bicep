@@ -10,5 +10,5 @@
 You should put your location with --location option.
 
 ```
-az deployment sub create -f azuredeploy.bicep --location japaneast
+az deployment sub create -f ri-prereqs.bicep --location japaneast
 ```
