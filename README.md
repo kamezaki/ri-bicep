@@ -8,3 +8,4 @@ export APP_NAME="ri-app"
 
 1. az ad sp create-for-rbac --name ${APP_NAME}
 1. create prerequisite resources see [01-prerequisite](01-prerequisite/README.md)
+1. deploy all resources see [02-resources](02-resources/README.md)

@@ -2,7 +2,7 @@
 
 ## create resources
 
-- create resource group
+- create resource group (default name `ri-app-rg`)
 - make managed identities for delivery/droneScheduler/workflow
 
 ## How to deploy
