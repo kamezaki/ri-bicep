@@ -32,6 +32,7 @@ module droneKV '../templates/key-vault.bicep' = {
   name: 'nested-kv-${kvName}'
   params: {
     name: kvName
+    rolePrincipalId: droneSchedulerPrincipal.outputs.principalId
     principalIds: [
       droneSchedulerPrincipal.outputs.principalId
     ]
@@ -82,5 +83,4 @@ module droneKV '../templates/key-vault.bicep' = {
 }
 
 // TODO
-// add role assignment
 // add rolw with for aks

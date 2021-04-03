@@ -41,6 +41,7 @@ module workflowKV '../templates/key-vault.bicep' = {
   name: 'netsted-kv-${workflowKVName}'
   params: {
     name: workflowKVName
+    rolePrincipalId: workflowPrincipal.outputs.principalId
     principalIds: [
       workflowPrincipal.outputs.principalId
     ]
@@ -75,5 +76,4 @@ module workflowKV '../templates/key-vault.bicep' = {
 }
 
 // TODO
-// add workflow role asignment
-// add rolw with for aks
+// add role with for aks

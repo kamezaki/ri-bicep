@@ -56,6 +56,7 @@ module deliveryKV '../templates/key-vault.bicep' = {
   name: 'nested-kv-${kvName}'
   params: {
     name: kvName
+    rolePrincipalId: deliveryPrincipal.outputs.principalId
     principalIds: [
       deliveryPrincipal.outputs.principalId
       readerRoleObjectId
@@ -91,5 +92,4 @@ module deliveryKV '../templates/key-vault.bicep' = {
 }
 
 // TODO
-// add role assignment
 // add rolw with for aks
