@@ -78,7 +78,7 @@ module deliveryKV '../templates/key-vault.bicep' = {
       //   value: cache.outputs.primaryKey
       // }
       {
-        key: 'ApplicationInsights-InstrumentationKey'
+        key: 'ApplicationInsights--InstrumentationKey'
         value: instrumentationKey
       }
     ]
@@ -89,3 +89,7 @@ module deliveryKV '../templates/key-vault.bicep' = {
     }
   }
 }
+
+// TODO
+// add role assignment
+// add rolw with for aks

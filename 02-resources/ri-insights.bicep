@@ -16,7 +16,7 @@ module insights '../templates/app-insights.bicep' = {
       displayName: 'Application Insights Instance - Distribute Tracing'
       environment: environment
     }
-    }
+  }
 }
 
 output insightsId string = insights.outputs.id

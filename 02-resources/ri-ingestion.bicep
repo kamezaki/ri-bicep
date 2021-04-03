@@ -10,6 +10,7 @@ var ingestionSBNamespace = '${environment}-i-${uniqueString(resourceGroup().id)}
 var ingestionSBName = '${environment}-i-${uniqueString(resourceGroup().id)}'
 var ingestionServiceAccessKey = 'ingestionServiceAccessKey'
 
+var workflowKVName = '${environment}-wf-${uniqueString(resourceGroup().id)}'
 var workflowServiceAccessKey = 'WorkflowServiceAccessKey'
 
 module sb '../templates/service-bus.bicep' = {
@@ -28,3 +29,51 @@ module sb '../templates/service-bus.bicep' = {
     }
   }
 }
+
+module workflowPrincipal '../templates/query-identity.bicep' = {
+  name: 'query-${environment}-workflow'
+  params: {
+    name: '${environment}-workflow'
+  }
+}
+
+module workflowKV '../templates/key-vault.bicep' = {
+  name: 'netsted-kv-${workflowKVName}'
+  params: {
+    name: workflowKVName
+    principalIds: [
+      workflowPrincipal.outputs.principalId
+    ]
+    data: [
+      {
+        key: 'QueueName'
+        value: ingestionSBName
+      }
+      {
+        key: 'QueueEndpoint'
+        value: sb.outputs.serviceBusEndpoint
+      }
+      {
+        key: 'QueueAccessPolicyName'
+        value: workflowServiceAccessKey
+      }
+      {
+        key: 'QueueAccessPolicyKey'
+        value: sb.outputs.sendRuleId
+      }
+      {
+        key: 'ApplicationInsights--InstrumentationKey'
+        value: instrumentationKey
+      }
+    ]
+    tags: {
+      displayName: 'Workflow Key Vault'
+      app: '${appName}-workflow'
+      environment: environment
+    }
+  }
+}
+
+// TODO
+// add workflow role asignment
+// add rolw with for aks

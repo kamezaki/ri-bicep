@@ -92,6 +92,46 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
   }
 }
 
+var monitoringMetricsPublisherRoleObjectId = '3913510d-42f4-4e42-8a64-420c390055eb'
+module queryMonitorRole 'role-definitions.bicep' = {
+  name: 'query-${monitoringMetricsPublisherRoleObjectId}'
+  params: {
+    roleId: monitoringMetricsPublisherRoleObjectId
+  }
+}
+
+var monitoringMetricsPublisherRoleId = queryMonitorRole.outputs.id
+resource assignMonitorRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(clusterName, monitoringMetricsPublisherRoleObjectId)
+  scope: aks
+  properties:{
+    principalId: any(aks.properties.identityProfile.kubeletidentity).objectId
+    roleDefinitionId: queryMonitorRole.outputs.id
+    principalType: 'ServicePrincipal'
+    description: '${clusterName}-MonitringMetricsPublisher'
+  }
+}
+
+// EnsureClusterUserAssignedHasRbacToManageVMS
+var vmContributerRoleObjectId = '9980e02c-c2be-4d73-94e8-173b1dc7cf3c'
+module queryVmContributorRole 'role-definitions.bicep' = {
+  name: 'query-${vmContributerRoleObjectId}'
+  params: {
+    roleId: vmContributerRoleObjectId
+  }
+}
+
+resource assignVmContributerRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(clusterName, vmContributerRoleObjectId)
+  scope: aks
+  properties:{
+    principalId: any(aks.properties.identityProfile.kubeletidentity).objectId
+    roleDefinitionId: queryVmContributorRole.outputs.id
+    principalType: 'ServicePrincipal'
+    description: 'It is required to grant the AKS cluster with Virtual Machine Contributor role permissions over the cluster infrastructure resource group to work with Managed Identities and aad-pod-identity. Otherwise MIC component fails while attempting to update MSI on VMSS cluster nodes'
+  }
+}
+
 output id string = aks.id
 output name string = aks.name
 output apiServerAddress string = aks.properties.fqdn

@@ -28,20 +28,14 @@ module pullRoleDef 'role-definitions.bicep' = {
   }
 }
 
-// resource roleDef 'Microsoft.Authorization/roleDefinitions@2015-07-01' existing = {
-//   scope: subscription()
-//   name: acrPullRole
-// }
-
 // for acr pull role
 resource pull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(acrName, 'AcrPullRole')
+  name: guid(acrName, acrPullRoleObjectId)
   scope: acr
   properties:{
     principalId: targetPrincipalId
     roleDefinitionId: pullRoleDef.outputs.id
     principalType: 'ServicePrincipal'
-    description: '${acrName}-acrpull'
   }
 }
 

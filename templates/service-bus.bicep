@@ -55,3 +55,7 @@ resource listenRule 'Microsoft.ServiceBus/namespaces/AuthorizationRules@2017-04-
     ]
   }
 }
+
+output serviceBusEndpoint string = busNamespace.properties.serviceBusEndpoint
+output sendRuleId string = sendRule.id
+output listenRuneId string = listenRule.id
