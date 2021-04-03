@@ -16,20 +16,18 @@ var cacheName = '${environment}-d-${uniqueString(resourceGroup().id)}'
 var dbName = '${environment}-d-${uniqueString(resourceGroup().id)}'
 var kvName = '${environment}-d-${uniqueString(resourceGroup().id)}'
 
-// Deploy was failed at 2/Apr/2021
-//
-// module cache '../templates/redis-cache.bicep' = {
-//   name: 'nested-cache-${cacheName}'
-//   params: {
-//     name: cacheName
-//     storageAccountName: diagStoregeName
-//     tags: {
-//       displayName: 'reds cache inflight delilveries'
-//       app: '${appName}-delivery'
-//       environment: environment
-//     }
-//   }
-// }
+module cache '../templates/redis-cache.bicep' = {
+  name: 'nested-cache-${cacheName}'
+  params: {
+    name: cacheName
+    storageAccountName: diagStoregeName
+    tags: {
+      displayName: 'reds cache inflight delilveries'
+      app: '${appName}-delivery'
+      environment: environment
+    }
+  }
+}
 
 module database '../templates/cosmos-db.bicep' = {
   name: 'nested-db-${dbName}'
@@ -43,8 +41,6 @@ module database '../templates/cosmos-db.bicep' = {
     }
   }
 }
-
-// // todo enable diagnostics
 
 var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
 
@@ -80,14 +76,14 @@ module deliveryKV '../templates/key-vault.bicep' = {
         key: 'CosmosDB-Key'
         value: database.outputs.primaryMasterKey
       }
-      // {
-      //   key: 'RedisCache-Endpoint'
-      //   value: cache.outputs.hostname
-      // }
-      // {
-      //   key: 'RedisCache-AccessKey'
-      //   value: cache.outputs.primaryKey
-      // }
+      {
+        key: 'RedisCache-Endpoint'
+        value: cache.outputs.hostname
+      }
+      {
+        key: 'RedisCache-AccessKey'
+        value: cache.outputs.primaryKey
+      }
       {
         key: 'ApplicationInsights--InstrumentationKey'
         value: insights.outputs.instrumentationKey

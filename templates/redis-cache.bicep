@@ -25,13 +25,13 @@ param retentionDays int = 7
 param tags object = {}
 
 var skuFamily = sku == 'Premium' ? 'P' : 'C'
-// module sa 'storage-account.bicep' = if(diagnosticsEnabled) {
-//   name: 'nested-rso-${name}'
-//   params: {
-//     name: storageAccountName
-//     tags: tags
-//   }
-// }
+module sa 'storage-account.bicep' = if(diagnosticsEnabled) {
+  name: 'nested-rso-${name}'
+  params: {
+    name: storageAccountName
+    tags: tags
+  }
+}
 
 resource cache 'Microsoft.Cache/redis@2020-06-01' = {
   name: name
@@ -47,24 +47,23 @@ resource cache 'Microsoft.Cache/redis@2020-06-01' = {
   tags: tags
 }
 
-// TODO diagnostics
-// resource diag 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
-//   name: 'redis-diag-${name}'
-//   scope: cache
-//   properties: {
-//     storageAccountId: diagnosticsEnabled ? sa.outputs.id : json('null')
-//     metrics: [
-//       {
-//         timeGrain: 'AllMetrics'
-//         enabled: diagnosticsEnabled
-//         retentionPolicy: {
-//           days: retentionDays
-//           enabled: diagnosticsEnabled
-//         }
-//       }
-//     ]
-//   }
-// }
+resource diag 'microsoft.insights/diagnosticSettings@2017-05-01-preview' = {
+  name: 'redis-diag-${name}'
+  scope: cache
+  properties: {
+    storageAccountId: diagnosticsEnabled ? sa.outputs.id : json('null')
+    metrics: [
+      {
+        timeGrain: 'AllMetrics'
+        enabled: diagnosticsEnabled
+        retentionPolicy: {
+          days: retentionDays
+          enabled: diagnosticsEnabled
+        }
+      }
+    ]
+  }
+}
 
 output id string = cache.id
 output primaryKey string = listKeys(cache.id, cache.apiVersion).primaryKey
