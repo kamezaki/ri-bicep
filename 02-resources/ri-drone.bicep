@@ -1,10 +1,10 @@
 @description('setup environment name')
 param environment string
-@description('Instrumentation Key for Applicatoin Insights')
-param instrumentationKey string
 
 @description('Application name')
 param appName string = 'fabrikam'
+@description('Application Insights name')
+param insightsName string = '${environment}-${uniqueString('ai', resourceGroup().id)}'
 
 var dbName = '${environment}-ds-${uniqueString(resourceGroup().id)}'
 var kvName = '${environment}-ds-${uniqueString(resourceGroup().id)}'
@@ -25,6 +25,13 @@ module droneSchedulerPrincipal '../templates/query-identity.bicep' = {
   name: 'query-${environment}-droneScheduler'
   params: {
     name: '${environment}-droneScheduler'
+  }
+}
+
+module insights '../templates/query-insights.bicep' = {
+  name: 'query-${insightsName}'
+  params: {
+    name: insightsName
   }
 }
 
@@ -71,7 +78,7 @@ module droneKV '../templates/key-vault.bicep' = {
       }
       {
         key: 'ApplicationInsights--InstrumentationKey'
-        value: instrumentationKey
+        value: insights.outputs.instrumentationKey
       }
     ]
     tags: {

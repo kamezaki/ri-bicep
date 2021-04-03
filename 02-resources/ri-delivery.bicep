@@ -1,12 +1,15 @@
 @description('setup environment name')
 param environment string
-@description('Instrumentation Key for Applicatoin Insights')
-param instrumentationKey string
+@description('Application Insights name')
+param insightsName string = '${environment}-${uniqueString('ai', resourceGroup().id)}'
 
 @description('tenant id')
 param tenantId string = subscription().tenantId
 @description('Application name')
 param appName string = 'fabrikam'
+
+@description('Kubernetes cluster name')
+param aksClusterName string = '${appName}-${environment}'
 
 var diagStoregeName = '${environment}rsto${uniqueString(resourceGroup().id)}'
 var cacheName = '${environment}-d-${uniqueString(resourceGroup().id)}'
@@ -52,6 +55,13 @@ module deliveryPrincipal '../templates/query-identity.bicep' = {
   }
 }
 
+module insights '../templates/query-insights.bicep' = {
+  name: 'query-${insightsName}'
+  params: {
+    name: insightsName
+  }
+}
+
 module deliveryKV '../templates/key-vault.bicep' = {
   name: 'nested-kv-${kvName}'
   params: {
@@ -80,7 +90,7 @@ module deliveryKV '../templates/key-vault.bicep' = {
       // }
       {
         key: 'ApplicationInsights--InstrumentationKey'
-        value: instrumentationKey
+        value: insights.outputs.instrumentationKey
       }
     ]
     tags: {
@@ -88,6 +98,14 @@ module deliveryKV '../templates/key-vault.bicep' = {
       app: '${appName}-delivery'
       environment: environment
     }
+  }
+}
+
+module bindCluster '../templates/bind-to-aks.bicep' = {
+  name: 'nested-bind-cluster-${environment}-delivery'
+  params: {
+    idName: deliveryPrincipal.outputs.name
+    aksClusterName: aksClusterName
   }
 }
 

@@ -1,7 +1,7 @@
 @description('setup environment name')
 param environment string
-@description('Instrumentation Key for Applicatoin Insights')
-param instrumentationKey string
+@description('Application Insights name')
+param insightsName string = '${environment}-${uniqueString('ai', resourceGroup().id)}'
 
 @description('Application name')
 param appName string = 'fabrikam'
@@ -37,6 +37,13 @@ module workflowPrincipal '../templates/query-identity.bicep' = {
   }
 }
 
+module insights '../templates/query-insights.bicep' = {
+  name: 'query-${insightsName}'
+  params: {
+    name: insightsName
+  }
+}
+
 module workflowKV '../templates/key-vault.bicep' = {
   name: 'netsted-kv-${workflowKVName}'
   params: {
@@ -64,7 +71,7 @@ module workflowKV '../templates/key-vault.bicep' = {
       }
       {
         key: 'ApplicationInsights--InstrumentationKey'
-        value: instrumentationKey
+        value: insights.outputs.instrumentationKey
       }
     ]
     tags: {
