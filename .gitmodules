@@ -1,0 +1,3 @@
+[submodule "reference-implementation"]
+	path = reference-implementation
+	url = https://github.com/mspnp/microservices-reference-implementation.git
