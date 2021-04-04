@@ -10,3 +10,7 @@ HELP.md
 # System Files
 .DS_Store
 Thumbs.db
+
+# ionide files
+.fake
+.ionide

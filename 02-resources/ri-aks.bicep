@@ -30,10 +30,11 @@ param agentMinCount int = 3
 @description('The maximum number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production')
 param agentMaxCount int = 5
 
-// @description('service principal id')
-// param servicePrincipalId string = 'msi'
-// @description('service principal secret')
-// param servicePrincipalSecret string = json('null')
+@description('service principal id')
+param servicePrincipalId string = ''
+@description('service principal secret')
+@secure()
+param servicePrincipalSecret string = ''
 
 // settings for Log analytics workspace
 @description('workspace sku')
@@ -58,6 +59,8 @@ module aks '../templates/aks-cluster.bicep' = {
     agentMaxCount: agentMaxCount
     availabilityZones: aksAvailabilityZones
     workspaceId: workspace.outputs.id
+    servicePrincipalId: servicePrincipalId
+    servicePrincipalSecret: servicePrincipalSecret
   }
 }
 

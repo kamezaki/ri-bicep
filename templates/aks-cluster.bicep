@@ -27,10 +27,11 @@ param agentVMSize string = 'Standard_D2_v3'
 @maxValue(1023)
 param osDiskSizeGB int = 0
 @description('Node resource group name')
-param nodeResourceGroup string = 'MC_${resourceGroup().name}'
+param nodeResourceGroup string = 'MC_${resourceGroup().name}_${location}'
 @description('service princilal client id')
 param servicePrincipalId string = ''
 @description('service principal secret')
+@secure()
 param servicePrincipalSecret string = ''
 @description('subnet refernce')
 param subnetRef string = ''
@@ -43,18 +44,19 @@ var servicePrincipalProfile = {
   clientId: servicePrincipalId
   secret: servicePrincipalSecret
 }
+
 var systemAssignedPrincipalProfile = {
   clientId: 'msi'
 }
 
 // Azure kubernetes service
-resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
   name: clusterName
   location: location
   tags: tags
-  identity: {
+  identity: empty(servicePrincipalId) ? {
     type: 'SystemAssigned'
-  }
+  } : json('null')
   properties: {
     kubernetesVersion: kubernetesVersion
     enableRBAC: true
@@ -75,7 +77,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
         vnetSubnetID: empty(subnetRef) ? json('null') : subnetRef
       }
     ]
-    servicePrincipalProfile: length(servicePrincipalId) != 0 ? servicePrincipalProfile : systemAssignedPrincipalProfile
+    servicePrincipalProfile: empty(servicePrincipalId)  ? systemAssignedPrincipalProfile : servicePrincipalProfile
     nodeResourceGroup: nodeResourceGroup
     networkProfile: {
       networkPlugin: 'azure'  // use Azure CNI
@@ -92,6 +94,8 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
   }
 }
 
+var principalIdForCluster = !empty(servicePrincipalId) ? servicePrincipalId : any(aks.properties.identityProfile.kubeletidentity).objectId
+
 var monitoringMetricsPublisherRoleObjectId = '3913510d-42f4-4e42-8a64-420c390055eb'
 module queryMonitorRole 'role-definitions.bicep' = {
   name: 'query-${monitoringMetricsPublisherRoleObjectId}'
@@ -105,7 +109,7 @@ resource assignMonitorRole 'Microsoft.Authorization/roleAssignments@2020-04-01-p
   name: guid(clusterName, monitoringMetricsPublisherRoleObjectId)
   scope: aks
   properties:{
-    principalId: any(aks.properties.identityProfile.kubeletidentity).objectId
+    principalId: principalIdForCluster
     roleDefinitionId: queryMonitorRole.outputs.id
     principalType: 'ServicePrincipal'
     description: '${clusterName}-MonitringMetricsPublisher'
@@ -125,7 +129,7 @@ resource assignVmContributerRole 'Microsoft.Authorization/roleAssignments@2020-0
   name: guid(clusterName, vmContributerRoleObjectId)
   scope: aks
   properties:{
-    principalId: any(aks.properties.identityProfile.kubeletidentity).objectId
+    principalId: principalIdForCluster
     roleDefinitionId: queryVmContributorRole.outputs.id
     principalType: 'ServicePrincipal'
     description: 'It is required to grant the AKS cluster with Virtual Machine Contributor role permissions over the cluster infrastructure resource group to work with Managed Identities and aad-pod-identity. Otherwise MIC component fails while attempting to update MSI on VMSS cluster nodes'
@@ -135,4 +139,4 @@ resource assignVmContributerRole 'Microsoft.Authorization/roleAssignments@2020-0
 output id string = aks.id
 output name string = aks.name
 output apiServerAddress string = aks.properties.fqdn
-output principalId string = any(aks.properties.identityProfile.kubeletidentity).objectId
+output principalId string = principalIdForCluster
