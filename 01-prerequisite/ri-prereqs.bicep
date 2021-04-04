@@ -34,6 +34,9 @@ var rgScope = resourceGroup(resourceGroupName)
 module userIdentities '../templates/user-assingment-identity.bicep' = [for app in apps: {
   scope: rgScope
   name: 'nested-identity-${environment}-${app}'
+  dependsOn: [
+    rg
+  ]
   params: {
     name: '${environment}-${app}'
     tags: {

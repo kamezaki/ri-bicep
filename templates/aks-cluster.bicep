@@ -31,6 +31,7 @@ param nodeResourceGroup string = 'MC_${resourceGroup().name}'
 @description('service princilal client id')
 param servicePrincipalId string = ''
 @description('service principal secret')
+@secure()
 param servicePrincipalSecret string = ''
 @description('subnet refernce')
 param subnetRef string = ''
@@ -48,7 +49,7 @@ var systemAssignedPrincipalProfile = {
 }
 
 // Azure kubernetes service
-resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
+resource aks 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
   name: clusterName
   location: location
   tags: tags
@@ -75,7 +76,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
         vnetSubnetID: empty(subnetRef) ? json('null') : subnetRef
       }
     ]
-    servicePrincipalProfile: length(servicePrincipalId) != 0 ? servicePrincipalProfile : systemAssignedPrincipalProfile
+    servicePrincipalProfile: empty(servicePrincipalId)  ? systemAssignedPrincipalProfile : servicePrincipalProfile
     nodeResourceGroup: nodeResourceGroup
     networkProfile: {
       networkPlugin: 'azure'  // use Azure CNI
