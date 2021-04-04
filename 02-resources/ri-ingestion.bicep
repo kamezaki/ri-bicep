@@ -81,6 +81,3 @@ module workflowKV '../templates/key-vault.bicep' = {
     }
   }
 }
-
-// TODO
-// add role with for aks

@@ -104,6 +104,3 @@ module bindCluster '../templates/bind-to-aks.bicep' = {
     aksClusterName: aksClusterName
   }
 }
-
-// TODO
-// add rolw with for aks

@@ -88,6 +88,3 @@ module droneKV '../templates/key-vault.bicep' = {
     }
   }
 }
-
-// TODO
-// add rolw with for aks
