@@ -54,9 +54,9 @@ resource aks 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
   name: clusterName
   location: location
   tags: tags
-  identity: empty(servicePrincipalId) ? {
+  identity: {
     type: 'SystemAssigned'
-  } : json('null')
+  }
   properties: {
     kubernetesVersion: kubernetesVersion
     enableRBAC: true
@@ -94,7 +94,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
   }
 }
 
-var principalIdForCluster = !empty(servicePrincipalId) ? servicePrincipalId : any(aks.properties.identityProfile.kubeletidentity).objectId
+var principalIdForCluster = any(aks.properties.identityProfile.kubeletidentity).objectId
 
 var monitoringMetricsPublisherRoleObjectId = '3913510d-42f4-4e42-8a64-420c390055eb'
 module queryMonitorRole 'role-definitions.bicep' = {
