@@ -14,7 +14,7 @@ param acrLocation string = resourceGroup().location
 
 // settings for AKS
 @description('Kubernetes cluster name')
-param aksClusterName string = '${appName}-${environment}'
+param aksClusterName string = '${appName}'
 @description('Availability zone for aks')
 param aksAvailabilityZones array = [
   '1'

@@ -9,7 +9,7 @@ param tenantId string = subscription().tenantId
 param appName string = 'fabrikam'
 
 @description('Kubernetes cluster name')
-param aksClusterName string = '${appName}-${environment}'
+param aksClusterName string = '${appName}'
 
 var diagStoregeName = '${environment}rsto${uniqueString(resourceGroup().id)}'
 var cacheName = '${environment}-d-${uniqueString(resourceGroup().id)}'

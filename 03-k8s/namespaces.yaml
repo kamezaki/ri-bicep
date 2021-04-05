@@ -1,0 +1,27 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: backend
+  labels:
+    name: backend
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: backend-staging
+  labels:
+    name: backend-staging
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: backend-qa
+  labels:
+    name: backend-qa
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: backend-dev
+  labels:
+    name: backend-dev
