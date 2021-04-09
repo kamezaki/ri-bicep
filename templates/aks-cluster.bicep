@@ -106,7 +106,7 @@ module queryMonitorRole 'role-definitions.bicep' = {
 
 var monitoringMetricsPublisherRoleId = queryMonitorRole.outputs.id
 resource assignMonitorRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(clusterName, monitoringMetricsPublisherRoleObjectId)
+  name: guid(aks.id, monitoringMetricsPublisherRoleObjectId)
   scope: aks
   properties:{
     principalId: principalIdForCluster
@@ -126,7 +126,7 @@ module queryVmContributorRole 'role-definitions.bicep' = {
 }
 
 resource assignVmContributerRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(clusterName, vmContributerRoleObjectId)
+  name: guid(aks.id, vmContributerRoleObjectId)
   scope: aks
   properties:{
     principalId: principalIdForCluster

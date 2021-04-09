@@ -30,7 +30,7 @@ module pullRoleDef 'role-definitions.bicep' = {
 
 // for acr pull role
 resource pull 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(acrName, acrPullRoleObjectId)
+  name: guid(acr.id, targetPrincipalId, acrPullRoleObjectId)
   scope: acr
   properties:{
     principalId: targetPrincipalId

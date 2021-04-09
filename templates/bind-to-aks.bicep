@@ -23,7 +23,7 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-
 }
 
 resource assign 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(idName, aksClusterName)
+  name: guid(idName, aksClusterName, managedIdentityOperatorRoleObjectId)
   scope: userIdentity
   properties: {
     principalId: cluster.outputs.principalId
