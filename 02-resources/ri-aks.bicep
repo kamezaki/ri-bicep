@@ -1,6 +1,3 @@
-@description('deployment environment')
-param environment string
-
 @description('Application name')
 param appName string = 'fabrikam'
 
@@ -43,7 +40,7 @@ param workspaceSku string = 'Free'
 var aksClusterVersion = '1.19.6'
 
 module workspace '../templates/workspace.bicep' = {
-  name: 'nested-workspace-${appName}-${environment}'
+  name: 'nested-workspace-${appName}'
   params: {
     workspaceNamePrefix: aksClusterName
     sku: workspaceSku
@@ -51,7 +48,7 @@ module workspace '../templates/workspace.bicep' = {
 }
 
 module aks '../templates/aks-cluster.bicep' = {
-  name: 'nested-aks-${appName}-${environment}'
+  name: 'nested-aks-${appName}'
   params: {
     clusterName: aksClusterName
     kubernetesVersion: aksClusterVersion
