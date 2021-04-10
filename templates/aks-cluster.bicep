@@ -37,6 +37,8 @@ param servicePrincipalSecret string = ''
 param subnetRef string = ''
 @description('Log analytics workspace id')
 param workspaceId string = ''
+@description('configuration for pod identity as { name, namespace, clientId }')
+param podIdentities array = []
 @description('tags for aks cluster')
 param tags object = {}
 
@@ -82,6 +84,17 @@ resource aks 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
     networkProfile: {
       networkPlugin: 'azure'  // use Azure CNI
       loadBalancerSku: 'standard'
+    }
+    podIdentityProfile: {
+      enabled: length(podIdentities) != 0
+      allowNetworkPluginKubenet: false
+      userAssignedIdentities: [for item in podIdentities: {
+        name: item.name
+        namespace: item.namespace
+        identity: {
+          clientId: item.clientId
+        }       
+      }]
     }
     addonProfiles: {
       omsagent: empty(workspaceId) ? json('null') : {

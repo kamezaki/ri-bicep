@@ -12,4 +12,6 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-
 }
 
 output idName string = userIdentity.name
-output principalResourceId string = userIdentity.id
+output id string = userIdentity.id
+output clientId string = userIdentity.properties.clientId
+output principalId string = userIdentity.properties.principalId

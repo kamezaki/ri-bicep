@@ -1,5 +1,7 @@
 @description('Application name')
 param appName string = 'fabrikam'
+@description('location for this resource')
+param location string = resourceGroup().location
 
 // settings for ACR
 @description('ACR name')
@@ -39,6 +41,14 @@ param workspaceSku string = 'Free'
 
 var aksClusterVersion = '1.19.6'
 
+var podIdentityName = '${aksClusterName}-pod-identity'
+module podIdentity '../templates/user-assingment-identity.bicep' = {
+  name: 'nested-assign-${podIdentityName}'
+  params: {
+    name: podIdentityName
+  }
+}
+
 module workspace '../templates/workspace.bicep' = {
   name: 'nested-workspace-${appName}'
   params: {
@@ -46,6 +56,7 @@ module workspace '../templates/workspace.bicep' = {
     sku: workspaceSku
   }
 }
+
 
 module aks '../templates/aks-cluster.bicep' = {
   name: 'nested-aks-${appName}'
@@ -58,6 +69,28 @@ module aks '../templates/aks-cluster.bicep' = {
     workspaceId: workspace.outputs.id
     servicePrincipalId: servicePrincipalId
     servicePrincipalSecret: servicePrincipalSecret
+    podIdentities: [
+      // {
+      //   name: '${podIdentityName}-prod'
+      //   namespace: 'bakcend'
+      //   clientId: podIdentity.outputs.clientId
+      // }
+      {
+        name: '${podIdentityName}-dev'
+        namespace: 'bakcend-dev'
+        clientId: podIdentity.outputs.clientId
+      }
+      // {
+      //   name: '${podIdentityName}-staging'
+      //   namespace: 'bakcend-staging'
+      //   clientId: podIdentity.outputs.clientId
+      // }
+      // {
+      //   name: '${podIdentityName}-qa'
+      //   namespace: 'bakcend-qa'
+      //   clientId: podIdentity.outputs.clientId
+      // }      
+    ]
   }
 }
 
