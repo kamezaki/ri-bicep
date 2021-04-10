@@ -3,9 +3,9 @@
 ```
 export RESOURCE_GROUP=<put your resource group name(default ri-app-rg)>
 
-az deployment group create -f ri-insights.bicep --resource-group ${RESOURCE_GROUP} --parameters parameters.json
+az deployment group create -f ri-aks.bicep --resource-group ${RESOURCE_GROUP}
 
-az deployment group create -f ri-aks.bicep --resource-group ${RESOURCE_GROUP} --parameters parameters.json
+az deployment group create -f ri-insights.bicep --resource-group ${RESOURCE_GROUP} --parameters parameters.json
 
 az deployment group create -f ri-delivery.bicep --resource-group ${RESOURCE_GROUP} --parameters parameters.json
 
