@@ -75,11 +75,11 @@ module aks '../templates/aks-cluster.bicep' = {
       //   namespace: 'bakcend'
       //   clientId: podIdentity.outputs.clientId
       // }
-      {
-        name: '${podIdentityName}-dev'
-        namespace: 'bakcend-dev'
-        clientId: podIdentity.outputs.clientId
-      }
+      // {
+      //   name: '${podIdentityName}-dev'
+      //   namespace: 'bakcend-dev'
+      //   clientId: podIdentity.outputs.clientId
+      // }
       // {
       //   name: '${podIdentityName}-staging'
       //   namespace: 'bakcend-staging'
