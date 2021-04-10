@@ -52,5 +52,5 @@ output resourceGroupName string = rg.name
 output assingedIdentities array = [for (id, i) in apps: {
   appName: id
   idName: userIdentities[i].outputs.idName
-  principalId: userIdentities[i].outputs.principalResourceId
+  principalId: userIdentities[i].outputs.id
 }]
