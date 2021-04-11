@@ -93,6 +93,8 @@ resource aks 'Microsoft.ContainerService/managedClusters@2021-02-01' = {
         namespace: item.namespace
         identity: {
           clientId: item.clientId
+          resourceId: item.resourceId
+          objectId: item.objectId
         }
       }]
     }

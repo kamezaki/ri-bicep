@@ -49,22 +49,24 @@ module readerRole '../templates/role-definitions.bicep' = {
   }
 }
 
-var podIdentityName = '${aksClusterName}-pod-identity'
-module podIdentity '../templates/user-assingment-identity.bicep' = {
-  name: 'nested-assign-${podIdentityName}'
-  params: {
-    name: podIdentityName
-  }
-}
-
-resource bindRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(resourceGroup().name, readerRoleObjectId, podIdentityName)
-  scope: resourceGroup()
-  properties:{
-    principalId: podIdentity.outputs.principalId
-    roleDefinitionId: readerRole.outputs.id
-  }
-}
+// this role is for pod-identity
+//
+// var podIdentityName = '${aksClusterName}-pod-identity'
+// module podIdentity '../templates/user-assingment-identity.bicep' = {
+//   name: 'nested-assign-${podIdentityName}'
+//   params: {
+//     name: podIdentityName
+//   }
+// }
+//
+// resource bindRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+//   name: guid(resourceGroup().name, readerRoleObjectId, podIdentityName)
+//   scope: resourceGroup()
+//   properties:{
+//     principalId: podIdentity.outputs.principalId
+//     roleDefinitionId: readerRole.outputs.id
+//   }
+// }
 
 
 module workspace '../templates/workspace.bicep' = {
@@ -74,7 +76,6 @@ module workspace '../templates/workspace.bicep' = {
     sku: workspaceSku
   }
 }
-
 
 module aks '../templates/aks-cluster.bicep' = {
   name: 'nested-aks-${appName}'
@@ -91,22 +92,30 @@ module aks '../templates/aks-cluster.bicep' = {
       // {
       //   name: '${podIdentityName}-prod'
       //   namespace: 'bakcend'
+      //   resourceId: podIdentity.outputs.id
       //   clientId: podIdentity.outputs.clientId
+      //   objectId: podIdentity.outputs.principalId
       // }
       // {
       //   name: '${podIdentityName}-dev'
       //   namespace: 'bakcend-dev'
+      //   resourceId: podIdentity.outputs.id
       //   clientId: podIdentity.outputs.clientId
+      //   objectId: podIdentity.outputs.principalId
       // }
       // {
       //   name: '${podIdentityName}-staging'
       //   namespace: 'bakcend-staging'
+      //   resourceId: podIdentity.outputs.id
       //   clientId: podIdentity.outputs.clientId
+      //   objectId: podIdentity.outputs.principalId
       // }
       // {
       //   name: '${podIdentityName}-qa'
       //   namespace: 'bakcend-qa'
+      //   resourceId: podIdentity.outputs.id
       //   clientId: podIdentity.outputs.clientId
+      //   objectId: podIdentity.outputs.principalId
       // }      
     ]
   }
