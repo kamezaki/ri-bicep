@@ -41,6 +41,14 @@ param workspaceSku string = 'Free'
 
 var aksClusterVersion = '1.19.6'
 
+var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+module readerRole '../templates/role-definitions.bicep' = {
+  name: 'query-${readerRoleObjectId}'
+  params: {
+    roleId: readerRoleObjectId
+  }
+}
+
 var podIdentityName = '${aksClusterName}-pod-identity'
 module podIdentity '../templates/user-assingment-identity.bicep' = {
   name: 'nested-assign-${podIdentityName}'
@@ -48,6 +56,16 @@ module podIdentity '../templates/user-assingment-identity.bicep' = {
     name: podIdentityName
   }
 }
+
+resource bindRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(resourceGroup().name, readerRoleObjectId, podIdentityName)
+  scope: resourceGroup()
+  properties:{
+    principalId: podIdentity.outputs.principalId
+    roleDefinitionId: readerRole.outputs.id
+  }
+}
+
 
 module workspace '../templates/workspace.bicep' = {
   name: 'nested-workspace-${appName}'
