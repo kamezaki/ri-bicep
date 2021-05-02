@@ -39,35 +39,7 @@ param servicePrincipalSecret string = ''
 @description('workspace sku')
 param workspaceSku string = 'Free'
 
-var aksClusterVersion = '1.19.6'
-
-var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
-module readerRole '../templates/role-definitions.bicep' = {
-  name: 'query-${readerRoleObjectId}'
-  params: {
-    roleId: readerRoleObjectId
-  }
-}
-
-// this role is for pod-identity
-//
-// var podIdentityName = '${aksClusterName}-pod-identity'
-// module podIdentity '../templates/user-assingment-identity.bicep' = {
-//   name: 'nested-assign-${podIdentityName}'
-//   params: {
-//     name: podIdentityName
-//   }
-// }
-//
-// resource bindRole 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-//   name: guid(resourceGroup().name, readerRoleObjectId, podIdentityName)
-//   scope: resourceGroup()
-//   properties:{
-//     principalId: podIdentity.outputs.principalId
-//     roleDefinitionId: readerRole.outputs.id
-//   }
-// }
-
+var aksClusterVersion = '1.19.7'
 
 module workspace '../templates/workspace.bicep' = {
   name: 'nested-workspace-${appName}'
@@ -88,36 +60,6 @@ module aks '../templates/aks-cluster.bicep' = {
     workspaceId: workspace.outputs.id
     servicePrincipalId: servicePrincipalId
     servicePrincipalSecret: servicePrincipalSecret
-    podIdentities: [
-      // {
-      //   name: '${podIdentityName}-prod'
-      //   namespace: 'bakcend'
-      //   resourceId: podIdentity.outputs.id
-      //   clientId: podIdentity.outputs.clientId
-      //   objectId: podIdentity.outputs.principalId
-      // }
-      // {
-      //   name: '${podIdentityName}-dev'
-      //   namespace: 'bakcend-dev'
-      //   resourceId: podIdentity.outputs.id
-      //   clientId: podIdentity.outputs.clientId
-      //   objectId: podIdentity.outputs.principalId
-      // }
-      // {
-      //   name: '${podIdentityName}-staging'
-      //   namespace: 'bakcend-staging'
-      //   resourceId: podIdentity.outputs.id
-      //   clientId: podIdentity.outputs.clientId
-      //   objectId: podIdentity.outputs.principalId
-      // }
-      // {
-      //   name: '${podIdentityName}-qa'
-      //   namespace: 'bakcend-qa'
-      //   resourceId: podIdentity.outputs.id
-      //   clientId: podIdentity.outputs.clientId
-      //   objectId: podIdentity.outputs.principalId
-      // }      
-    ]
   }
 }
 
