@@ -42,8 +42,6 @@ module database '../templates/cosmos-db.bicep' = {
   }
 }
 
-var readerRoleObjectId = 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
-
 module deliveryPrincipal '../templates/query-identity.bicep' = {
   name: 'query-${environment}-delivery'
   params: {
@@ -65,7 +63,6 @@ module deliveryKV '../templates/key-vault.bicep' = {
     rolePrincipalId: deliveryPrincipal.outputs.principalId
     principalIds: [
       deliveryPrincipal.outputs.principalId
-      readerRoleObjectId
     ]
     data: [
       {
